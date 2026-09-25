@@ -15,7 +15,7 @@
  * options (IHL > 5) the UDP header lands partly in iov[0]'s neighbour -
  * we detect that and skip the packet.
  *
- * usage: raw_udp_recv <port> [count]
+ * usage: raw_udp_recv <port>   (prints the first matching datagram, then exits)
  * needs: CAP_NET_RAW
  */
 #include <arpa/inet.h>
@@ -31,12 +31,11 @@
 
 int main(int argc, char **argv)
 {
-    if (argc < 2) {
-        fprintf(stderr, "usage: %s <port> [count]\n", argv[0]);
+    if (argc != 2) {
+        fprintf(stderr, "usage: %s <port>\n", argv[0]);
         return 1;
     }
     uint16_t port = (uint16_t)atoi(argv[1]);
-    int count = argc > 2 ? atoi(argv[2]) : 1;
 
     int fd = socket(AF_INET, SOCK_RAW, IPPROTO_UDP);
     if (fd < 0) {
@@ -46,7 +45,8 @@ int main(int argc, char **argv)
     printf("[raw-recv] sniffing all UDP, filtering dst port %u\n", port);
     fflush(stdout);
 
-    while (count > 0) {
+    /* Loop until one datagram for our port arrives - everything else is skipped. */
+    for (;;) {
         struct ipv4_hdr ip;
         struct udp_hdr udp;
         char payload[2048];
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
                csum_ok ? "valid" : "INVALID");
         printf("  iov[2] DATA: \"%s\" (%zu bytes)\n", payload, plen);
         fflush(stdout);
-        count--;
+        break;
     }
     close(fd);
     return 0;

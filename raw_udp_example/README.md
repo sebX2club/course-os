@@ -138,7 +138,6 @@ einen normalen Socket erreichen. Der Raw-Empfänger sieht auch kaputte Pakete �
    `IP_HDRINCL`. Welches iovec-Segment fällt weg?
 5. **Mitschneiden:** Starte im Empfänger-Container `tcpdump -X -i eth0 udp port 9999`
    (`apk add tcpdump`) und vergleiche die Bytes mit der Ausgabe von `raw_udp_recv`.
-6. **Mehrere Pakete:** Starte `raw_udp_recv 9999 5` und schicke fünf Nachrichten.
 
 ## Weiterführend
 
