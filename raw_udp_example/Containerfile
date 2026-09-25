@@ -1,0 +1,8 @@
+FROM docker.io/library/alpine:3.20 AS build
+RUN apk add --no-cache build-base
+WORKDIR /src
+COPY proto.h *.c Makefile ./
+RUN make
+
+FROM docker.io/library/alpine:3.20
+COPY --from=build /src/raw_udp_send /src/raw_udp_recv /usr/local/bin/
